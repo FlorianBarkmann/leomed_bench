@@ -1,6 +1,7 @@
 data:
-  data_root: "data"
-  batch_size: 128
+  dataset: "imagenet"
+  data_root: "data/imagenet"
+  batch_size: 64
   num_workers: 8
   image_size: 224
 
@@ -11,18 +12,17 @@ optimizer:
 runtime:
   seed: 42
   accelerator: "gpu"
-  devices: 4
+  devices: 1
   num_nodes: 1
-  strategy: "ddp"
+  strategy: "auto"
   precision: "16-mixed"
-  max_epochs: 1
-  max_steps: 200
+  max_epochs: 100
   log_every_n_steps: 10
   benchmark: true
   deterministic: false
   output_dir: "outputs"
-  run_name: "smoke_4gpu"
+  run_name: "imagenet_1gpu"
 
 model:
   name: "swin_t"
-  num_classes: 10
+  num_classes: 1000

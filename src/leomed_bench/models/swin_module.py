@@ -65,11 +65,14 @@ class SwinLightningModule(L.LightningModule):
         inputs, targets = batch
         logits = self.forward(inputs)
         loss = F.cross_entropy(logits, targets)
-        self.train_top1(logits, targets)
-        self.train_top5(logits, targets)
+        # Keep torchmetrics state graph-free across iterations under DDP.
+        metric_logits = logits.detach()
+        metric_targets = targets.detach()
+        self.train_top1(metric_logits, metric_targets)
+        self.train_top5(metric_logits, metric_targets)
         self.log(
             "train/loss",
-            loss,
+            loss.detach(),
             prog_bar=True,
             on_step=True,
             on_epoch=True,
@@ -105,11 +108,13 @@ class SwinLightningModule(L.LightningModule):
         inputs, targets = batch
         logits = self.forward(inputs)
         loss = F.cross_entropy(logits, targets)
-        self.val_top1(logits, targets)
-        self.val_top5(logits, targets)
+        metric_logits = logits.detach()
+        metric_targets = targets.detach()
+        self.val_top1(metric_logits, metric_targets)
+        self.val_top5(metric_logits, metric_targets)
         self.log(
             "val/loss",
-            loss,
+            loss.detach(),
             prog_bar=True,
             on_step=False,
             on_epoch=True,

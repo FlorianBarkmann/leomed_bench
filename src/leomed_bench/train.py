@@ -8,12 +8,14 @@ from lightning.pytorch.loggers import CSVLogger
 
 from leomed_bench.callbacks.throughput import ThroughputCallback
 from leomed_bench.config import TrainConfig, load_config
-from leomed_bench.data.imagenet import Cifar10DataModule
+from leomed_bench.data.imagenet import build_data_module
 from leomed_bench.models.swin_module import SwinLightningModule
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run Swin/CIFAR-10 SLURM benchmark.")
+    parser = argparse.ArgumentParser(
+        description="Run Swin benchmark on CIFAR-10 or ImageNet via SLURM."
+    )
     parser.add_argument(
         "--config",
         type=Path,
@@ -36,7 +38,6 @@ def build_trainer(config: TrainConfig) -> L.Trainer:
         strategy=config.runtime.strategy,
         precision=config.runtime.precision,
         max_epochs=config.runtime.max_epochs,
-        max_steps=config.runtime.max_steps,
         log_every_n_steps=config.runtime.log_every_n_steps,
         benchmark=config.runtime.benchmark,
         deterministic=config.runtime.deterministic,
@@ -47,7 +48,8 @@ def build_trainer(config: TrainConfig) -> L.Trainer:
 
 def run(config: TrainConfig) -> None:
     L.seed_everything(config.runtime.seed, workers=True)
-    data_module = Cifar10DataModule(
+    data_module = build_data_module(
+        dataset=config.data.dataset,
         data_root=config.data.data_root,
         batch_size=config.data.batch_size,
         num_workers=config.data.num_workers,
