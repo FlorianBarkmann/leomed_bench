@@ -9,7 +9,6 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --gres=gpu:rtx4090:4
 #SBATCH --mem=64GB
-#SBATCH --exclusive
 
 
 mkdir -p logs outputs

@@ -9,7 +9,6 @@
 #SBATCH --cpus-per-task=32
 #SBATCH --gres=gpu:rtx4090:1
 #SBATCH --mem=64GB
-#SBATCH --exclusive
 
 
 
