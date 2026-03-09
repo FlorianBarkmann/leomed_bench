@@ -19,13 +19,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--run-1gpu",
         type=Path,
-        default=Path("outputs/smoke_1gpu"),
+        default=Path("outputs/cifar10_1gpu"),
         help="Run directory for 1-GPU run (contains metrics.csv).",
     )
     parser.add_argument(
         "--run-4gpu",
         type=Path,
-        default=Path("outputs/smoke_4gpu"),
+        default=Path("outputs/cifar10_4gpu"),
         help="Run directory for 4-GPU run (contains metrics.csv).",
     )
     return parser.parse_args()

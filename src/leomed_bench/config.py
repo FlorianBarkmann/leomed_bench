@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, TypeAlias, TypedDict, cast
+from typing import Literal, NotRequired, TypeAlias, TypedDict, cast
 
 import yaml
 
@@ -12,9 +12,11 @@ PrecisionMode: TypeAlias = Literal[
     "16-mixed",
     "bf16-mixed",
 ]
+DatasetName: TypeAlias = Literal["cifar10", "imagenet"]
 
 
 class DataConfigRaw(TypedDict):
+    dataset: NotRequired[DatasetName]
     data_root: str
     batch_size: int
     num_workers: int
@@ -34,7 +36,6 @@ class RuntimeConfigRaw(TypedDict):
     strategy: str
     precision: PrecisionMode
     max_epochs: int
-    max_steps: int
     log_every_n_steps: int
     benchmark: bool
     deterministic: bool
@@ -56,6 +57,7 @@ class TrainConfigRaw(TypedDict):
 
 @dataclass(frozen=True)
 class DataConfig:
+    dataset: DatasetName
     data_root: Path
     batch_size: int
     num_workers: int
@@ -77,7 +79,6 @@ class RuntimeConfig:
     strategy: str
     precision: PrecisionMode
     max_epochs: int
-    max_steps: int
     log_every_n_steps: int
     benchmark: bool
     deterministic: bool
@@ -121,6 +122,7 @@ def load_config(config_path: Path) -> TrainConfig:
 
     return TrainConfig(
         data=DataConfig(
+            dataset=data_cfg.get("dataset", "cifar10"),
             data_root=Path(data_cfg["data_root"]),
             batch_size=data_cfg["batch_size"],
             num_workers=data_cfg["num_workers"],
@@ -138,7 +140,6 @@ def load_config(config_path: Path) -> TrainConfig:
             strategy=runtime_cfg["strategy"],
             precision=runtime_cfg["precision"],
             max_epochs=runtime_cfg["max_epochs"],
-            max_steps=runtime_cfg["max_steps"],
             log_every_n_steps=runtime_cfg["log_every_n_steps"],
             benchmark=runtime_cfg["benchmark"],
             deterministic=runtime_cfg["deterministic"],
